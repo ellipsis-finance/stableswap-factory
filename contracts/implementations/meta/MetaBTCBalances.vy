@@ -1,9 +1,9 @@
-# @version 0.3.0
+# @version 0.3.1
 """
 @title StableSwap
 @author Curve.Fi
 @license Copyright (c) Curve.Fi, 2020-2021 - all rights reserved
-@notice BTC metapool implementation contract
+@notice valBTC metapool implementation contract
 @dev ERC20 support for return True/revert, return True/False, return None
      Support for positive-rebasing and fee-on-transfer tokens
 """
@@ -34,6 +34,9 @@ interface CurveToken:
 
 interface FeeDistributor:
     def depositFee(_token: address, _amount: uint256) -> bool: nonpayable
+
+interface RewardsToken:
+    def addReward(_reward: address, _distributor: address, _duration: uint256): nonpayable
 
 
 event TokenExchange:
@@ -87,12 +90,13 @@ event StopRampA:
     t: uint256
 
 
-BASE_POOL: constant(address) = 0x2477fB288c5b4118315714ad3c7Fd7CC69b00bf9
-BASE_LP: constant(address) = 0x2a435Ecb3fcC0E316492Dc1cdd62d0F189be5640
+BASE_POOL: constant(address) = 0xfA715E7C8fA704Cf425Dd7769f4a77b81420fbF2
+BASE_LP: constant(address) = 0xdC7f3E34C43f8700B0EB58890aDd03AA84F7B0e1
 BASE_COINS: constant(address[2]) = [
-    0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c,  # BTCB
+    0x204992f7fCBC4c0455d7Fec5f712BeDd98E7d6d6,  # valBTCB
     0xfCe146bF3146100cfe5dB4129cf6C82b0eF4Ad8c,  # renBTC
 ]
+VALAS_TOKEN: constant(address) = 0xB1EbdD56729940089Ecc3aD0BBEEB12b6842ea6F
 
 N_COINS: constant(int128) = 2
 MAX_COIN: constant(int128) = N_COINS - 1
@@ -157,6 +161,10 @@ def initialize(
 
     for coin in BASE_COINS:
         ERC20(coin).approve(BASE_POOL, MAX_UINT256)
+
+    # add VALAS as reward to the LP token
+    # incentives are pushed from the base LP token on transfers to or from the pool
+    RewardsToken(_lp_token).addReward(VALAS_TOKEN, BASE_LP, 86400 * 7)
 
 
 @view
