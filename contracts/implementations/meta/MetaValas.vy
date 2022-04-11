@@ -3,7 +3,7 @@
 @title StableSwap
 @author Curve.Fi
 @license Copyright (c) Curve.Fi, 2020-2021 - all rights reserved
-@notice valBTC metapool implementation contract
+@notice val3EPS metapool implementation contract
 @dev ERC20 support for return True/revert, return True/False, return None
 """
 
@@ -89,17 +89,18 @@ event StopRampA:
     t: uint256
 
 
-BASE_POOL: constant(address) = 0xfA715E7C8fA704Cf425Dd7769f4a77b81420fbF2
-BASE_LP: constant(address) = 0xdC7f3E34C43f8700B0EB58890aDd03AA84F7B0e1
-BASE_COINS: constant(address[2]) = [
-    0x204992f7fCBC4c0455d7Fec5f712BeDd98E7d6d6,  # valBTCB
-    0xfCe146bF3146100cfe5dB4129cf6C82b0eF4Ad8c,  # renBTC
+BASE_POOL: constant(address) = 0x19EC9e3F7B21dd27598E7ad5aAe7dC0Db00A806d
+BASE_LP: constant(address) = 0x5b5bD8913D766D005859CE002533D4838B0Ebbb5
+BASE_COINS: constant(address[3]) = [
+    0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56,  # BUSD
+    0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d,  # USDC
+    0x55d398326f99059fF775485246999027B3197955,  # USDT
 ]
 VALAS_TOKEN: constant(address) = 0xB1EbdD56729940089Ecc3aD0BBEEB12b6842ea6F
 
 N_COINS: constant(int128) = 2
 MAX_COIN: constant(int128) = N_COINS - 1
-BASE_N_COINS: constant(int128) = 2
+BASE_N_COINS: constant(int128) = 3
 PRECISION: constant(uint256) = 10 ** 18
 
 FEE_DENOMINATOR: constant(uint256) = 10 ** 10
@@ -613,7 +614,7 @@ def exchange_underlying(
     old_balances: uint256[N_COINS] = self.balances
     xp: uint256[N_COINS] = self._xp_mem(rates, old_balances)
 
-    base_coins: address[2] = BASE_COINS
+    base_coins: address[3] = BASE_COINS
 
     dy: uint256 = 0
     base_i: int128 = 0

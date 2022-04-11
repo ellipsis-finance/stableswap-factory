@@ -114,7 +114,9 @@ contract RewardsToken is ReentrancyGuard {
     /* ========== MODIFIERS ========== */
 
     modifier onlyOwner() {
-        require(msg.sender == owner());
+        // admin functions are unguarded before setting the minter
+        // so the pool can configure the token prior to token initialization
+        require(minter == address(0) || msg.sender == owner());
         _;
     }
 
