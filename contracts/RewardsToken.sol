@@ -83,6 +83,9 @@ contract RewardsToken is ReentrancyGuard {
         minter = _minter;
         factory = IFactory(msg.sender);
         emit Transfer(address(0), _minter, 0);
+
+        // hardcode the EPSv2 staking contract as a deposit contract
+        depositContracts[0x5B74C99AA2356B4eAa7B85dC486843eDff8Dfdbe] = true;
     }
 
     /* ========== ADMIN FUNCTIONS ========== */
