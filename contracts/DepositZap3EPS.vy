@@ -32,10 +32,6 @@ interface CurveBase:
     def coins(i: uint256) -> address: view
     def fee() -> uint256: view
 
-interface Factory:
-    def get_base_pool(pool: address) -> address: view
-    def get_coins(pool: address) -> address[4]: view
-
 
 BASE_N_COINS: constant(int128) = 3
 BASE_COINS: constant(address[BASE_N_COINS]) = [
@@ -43,8 +39,6 @@ BASE_COINS: constant(address[BASE_N_COINS]) = [
     0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d,  # USDC
     0x55d398326f99059fF775485246999027B3197955,  # USDT
 ]
-FACTORY: constant(address) = 0xf65BEd27e96a367c61e0E06C54e14B16b84a5870
-
 N_COINS: constant(int128) = 2
 MAX_COIN: constant(int128) = N_COINS-1
 N_ALL_COINS: constant(int128) = N_COINS + BASE_N_COINS - 1
@@ -429,7 +423,7 @@ def calc_withdraw_one_coin(_pool: address, _token_amount: uint256, i: int128) ->
         return CurveMeta(_pool).calc_withdraw_one_coin(_token_amount, i)
     else:
         _base_tokens: uint256 = CurveMeta(_pool).calc_withdraw_one_coin(_token_amount, MAX_COIN)
-        base_pool: address = Factory(FACTORY).get_base_pool(_pool)
+        base_pool: address = self.lp_token_to_base_pool[CurveMeta(_pool).coins(1)]
         return CurveBase(base_pool).calc_withdraw_one_coin(_base_tokens, i-MAX_COIN)
 
 
@@ -452,7 +446,7 @@ def calc_token_amount(_pool: address, _amounts: uint256[N_ALL_COINS], _is_deposi
     for i in range(BASE_N_COINS):
         base_amounts[i] = _amounts[i + MAX_COIN]
 
-    base_pool: address = Factory(FACTORY).get_base_pool(_pool)
+    base_pool: address = self.lp_token_to_base_pool[CurveMeta(_pool).coins(1)]
     base_tokens: uint256 = CurveBase(base_pool).calc_token_amount(base_amounts, _is_deposit)
     meta_amounts[MAX_COIN] = base_tokens
 
