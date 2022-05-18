@@ -98,7 +98,12 @@ contract RewardsToken is ReentrancyGuard {
         public
         onlyOwner
     {
-        require(rewardData[_rewardsToken].rewardsDuration == 0);
+        require(_rewardsToken != address(this), "Cannot use token as own reward");
+        require(rewardData[_rewardsToken].rewardsDuration == 0, "Already is a reward");
+
+        // test transfer of 0 tokens to validate that `_rewardsToken` is an ERC20
+        IERC20(_rewardsToken).safeTransfer(msg.sender, 0);
+
         rewardTokens.push(_rewardsToken);
         rewardData[_rewardsToken].rewardsDistributor = _rewardsDistributor;
         rewardData[_rewardsToken].rewardsDuration = _rewardsDuration;
