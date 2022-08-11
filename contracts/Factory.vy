@@ -155,6 +155,13 @@ def metapool_implementations(_base_pool: address) -> address[10]:
 
 @view
 @external
+def get_market_count(_from: address, _to: address) -> uint256:
+    key: uint256 = bitwise_xor(convert(_from, uint256), convert(_to, uint256))
+    return self.market_counts[key]
+
+
+@view
+@external
 def find_pool_for_coins(_from: address, _to: address, i: uint256 = 0) -> address:
     """
     @notice Find an available pool for exchanging two coins
